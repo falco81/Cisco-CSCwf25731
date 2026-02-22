@@ -45,7 +45,7 @@ pip install openpyxl paramiko colorama
 Export your AP list from the Cisco 9800 WLC (Monitor > Access Points) and run:
 
 ```bash
-python ap_ssh_collector.py ap_statistics.xlsx
+python ap_ssh_collector_CSCwf25731.py ap_statistics.xlsx
 ```
 
 The script reads columns: **A** (AP Name), **B** (AP Model), **D** (IP Address). Column mapping can be changed in the configuration section.
@@ -67,7 +67,7 @@ Create a text file with one AP IP address per line:
 Lines starting with `#` are treated as comments. Then run:
 
 ```bash
-python ap_ssh_collector.py ap_ips.txt
+python ap_ssh_collector_CSCwf25731.py ap_ips.txt
 ```
 
 ### Authentication
