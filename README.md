@@ -1,6 +1,6 @@
 # AP SSH Collector + CSCwf25731 Analyzer
 
-A Python tool that connects to Cisco Catalyst Access Points via SSH, collects diagnostic data, and automatically analyzes each AP for susceptibility to **Cisco bug [CSCwf25731](https://www.cisco.com/c/en/us/support/docs/wireless/catalyst-9800-series-wireless-controllers/225443-validate-and-recover-catalyst-aps-on-17-1.html)** / **CSCwf37271** — a known issue where the file `/storage/cnssdaemon.log` grows up to 5 MB/day, exhausts partition space, and causes APs to enter a boot loop during upgrade.
+A Python tool that connects to Cisco Catalyst Access Points via SSH, collects diagnostic data, and automatically analyzes each AP for susceptibility to **Cisco bug [CSCwf25731](https://www.cisco.com/c/en/us/support/docs/wireless/wireless-lan-controller-software/225443-validate-and-recover-catalyst-aps-on.html)** / **CSCwf37271** — a known issue where the file `/storage/cnssdaemon.log` grows up to 5 MB/day, exhausts partition space, and causes APs to enter a boot loop during upgrade.
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)
