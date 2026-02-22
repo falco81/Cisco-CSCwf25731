@@ -1,1 +1,1 @@
-python -m PyInstaller --onefile --add-data ap_ssh_collector_CSCwf25731.py
+python -m PyInstaller --onefile ap_ssh_collector_CSCwf25731.py
