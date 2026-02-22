@@ -171,7 +171,7 @@ COMMANDS = [
 
 ## References
 
-- [Cisco: Validate and Recover Catalyst APs on 17.12 Impacted by Upgrade Failure](https://www.cisco.com/c/en/us/support/docs/wireless/catalyst-9800-series-wireless-controllers/225443-validate-and-recover-catalyst-aps-on-17-1.html)
+- [Cisco: Validate and Recover Catalyst APs on 17.12 Impacted by Upgrade Failure](https://www.cisco.com/c/en/us/support/docs/wireless/wireless-lan-controller-software/225443-validate-and-recover-catalyst-aps-on.html)
 - Cisco Bug IDs: [CSCwf25731](https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwf25731), [CSCwf37271](https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwf37271)
 
 ## License
