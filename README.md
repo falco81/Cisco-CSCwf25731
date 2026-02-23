@@ -1,6 +1,6 @@
 # AP SSH Collector + CSCwf25731 Analyzer
 
-A Python tool that connects to Cisco Catalyst Access Points via SSH, collects diagnostic data, and automatically analyzes each AP for susceptibility to **Cisco bug [CSCwf25731](https://www.cisco.com/c/en/us/support/docs/wireless/wireless-lan-controller-software/225443-validate-and-recover-catalyst-aps-on.html)** / **CSCwf37271** — a known issue where the file `/storage/cnssdaemon.log` grows up to 5 MB/day, exhausts partition space, and causes APs to enter a boot loop during upgrade.
+A Python tool that connects to Cisco Catalyst Access Points via SSH, collects diagnostic data, and automatically analyzes each AP for susceptibility to **Cisco bug [CSCwf25731](https://www.cisco.com/c/en/us/support/docs/wireless/catalyst-9800-series-wireless-controllers/225443-validate-and-recover-catalyst-aps-on-17-1.html)** / **CSCwf37271** — a known issue where the file `/storage/cnssdaemon.log` grows up to 5 MB/day, exhausts partition space, and causes APs to enter a boot loop during upgrade.
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)
@@ -48,7 +48,7 @@ Export your AP list from the Cisco 9800 WLC (Monitor > Access Points) and run:
 python ap_ssh_collector_CSCwf25731.py ap_statistics.xlsx
 ```
 
-The script reads columns: **A** (AP Name), **B** (AP Model), **D** (IP Address). Column mapping can be changed in the configuration section.
+The script auto-detects column positions from the header row (`AP Name`, `IP Address`, `AP Model`), so it works with any WLC firmware version regardless of column order.
 
 ### From text file
 
@@ -143,10 +143,15 @@ The tool maps each problem AP to the appropriate Cisco recovery option:
 All settings are in the `CONFIGURATION` section at the top of the script:
 
 ```python
-# Excel column mapping (1-indexed)
-AP_NAME_COL = 1    # column A
-IP_ADDR_COL = 4    # column D
-AP_MODEL_COL = 2   # column B
+# Excel: Column headers to search for (auto-detected from header row)
+HEADER_AP_NAME  = "AP Name"
+HEADER_IP_ADDR  = "IP Address"
+HEADER_AP_MODEL = "AP Model"
+
+# Fallback column indices if headers not found (1-indexed)
+FALLBACK_AP_NAME_COL = 1   # column A
+FALLBACK_IP_ADDR_COL = 4   # column D
+FALLBACK_AP_MODEL_COL = 2  # column B
 
 # SSH settings
 SSH_PORT = 22
@@ -171,7 +176,7 @@ COMMANDS = [
 
 ## References
 
-- [Cisco: Validate and Recover Catalyst APs on 17.12 Impacted by Upgrade Failure](https://www.cisco.com/c/en/us/support/docs/wireless/wireless-lan-controller-software/225443-validate-and-recover-catalyst-aps-on.html)
+- [Cisco: Validate and Recover Catalyst APs on 17.12 Impacted by Upgrade Failure](https://www.cisco.com/c/en/us/support/docs/wireless/catalyst-9800-series-wireless-controllers/225443-validate-and-recover-catalyst-aps-on-17-1.html)
 - Cisco Bug IDs: [CSCwf25731](https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwf25731), [CSCwf37271](https://bst.cloudapps.cisco.com/bugsearch/bug/CSCwf37271)
 
 ## License
