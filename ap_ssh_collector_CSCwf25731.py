@@ -58,10 +58,17 @@ except ImportError:
 # Excel: Sheet name (None = first sheet)
 SHEET_NAME = None
 
-# Excel: Columns (1-indexed): A=1, B=2, C=3, D=4
-AP_NAME_COL = 1   # column A - AP Name
-IP_ADDR_COL = 4   # column D - IP Address
-AP_MODEL_COL = 2  # column B - AP Model
+# Excel: Column header names to search for (case-insensitive, partial match)
+# The script auto-detects column positions from the header row.
+# If auto-detection fails, fallback indices are used.
+HEADER_AP_NAME  = "AP Name"
+HEADER_IP_ADDR  = "IP Address"
+HEADER_AP_MODEL = "AP Model"
+
+# Excel: Fallback column indices if headers not found (1-indexed)
+FALLBACK_AP_NAME_COL = 1   # column A
+FALLBACK_IP_ADDR_COL = 4   # column D
+FALLBACK_AP_MODEL_COL = 2  # column B
 
 # Excel: Data starts at row 2 (row 1 = header)
 DATA_START_ROW = 2
@@ -265,16 +272,71 @@ def ssh_run_commands(ip, username, password, enable_password, commands):
 # INPUT FILE READING
 # ============================================================
 
+def detect_columns(ws):
+    """Auto-detect column indices from header row. Returns (name_col, ip_col, model_col) as 0-indexed."""
+    headers = [cell.value for cell in next(ws.iter_rows(min_row=1, max_row=1))]
+
+    name_col = None
+    ip_col = None
+    model_col = None
+
+    for idx, header in enumerate(headers):
+        if header is None:
+            continue
+        h = str(header).strip().lower()
+
+        if name_col is None and "ap name" in h:
+            name_col = idx
+        elif ip_col is None and "ip" in h and "address" in h:
+            ip_col = idx
+        elif ip_col is None and h == "ip address":
+            ip_col = idx
+        elif model_col is None and "ap model" in h:
+            model_col = idx
+        elif model_col is None and h == "model":
+            model_col = idx
+
+    # Report detection results
+    detected = []
+    if name_col is not None:
+        detected.append(f"AP Name=col {name_col+1}")
+    if ip_col is not None:
+        detected.append(f"IP Address=col {ip_col+1}")
+    if model_col is not None:
+        detected.append(f"AP Model=col {model_col+1}")
+
+    if detected:
+        print(f"  {c_ok('Auto-detected columns:')} {', '.join(detected)}")
+
+    # Fallback to configured defaults
+    if name_col is None:
+        name_col = FALLBACK_AP_NAME_COL - 1
+        print(c_warn(f"  [!] Column '{HEADER_AP_NAME}' not found, using fallback col {FALLBACK_AP_NAME_COL}"))
+    if ip_col is None:
+        ip_col = FALLBACK_IP_ADDR_COL - 1
+        print(c_warn(f"  [!] Column '{HEADER_IP_ADDR}' not found, using fallback col {FALLBACK_IP_ADDR_COL}"))
+    if model_col is None:
+        model_col = FALLBACK_AP_MODEL_COL - 1
+        print(c_warn(f"  [!] Column '{HEADER_AP_MODEL}' not found, using fallback col {FALLBACK_AP_MODEL_COL}"))
+
+    return name_col, ip_col, model_col
+
+
 def read_ap_list_xlsx(excel_path, sheet_name=None):
     """Read AP list from Excel file. Returns [(name, ip, model), ...]"""
     wb = openpyxl.load_workbook(excel_path, read_only=False)
     ws = wb[sheet_name] if sheet_name else wb.active
 
+    name_col, ip_col, model_col = detect_columns(ws)
+    max_col_needed = max(name_col, ip_col, model_col)
+
     ap_list = []
     for row in ws.iter_rows(min_row=DATA_START_ROW, values_only=False):
-        ap_name = row[AP_NAME_COL - 1].value
-        ip_addr = row[IP_ADDR_COL - 1].value
-        ap_model = row[AP_MODEL_COL - 1].value if len(row) >= AP_MODEL_COL else ""
+        if len(row) <= max_col_needed:
+            continue
+        ap_name = row[name_col].value
+        ip_addr = row[ip_col].value
+        ap_model = row[model_col].value
         if ap_name and ip_addr:
             ap_list.append((
                 str(ap_name).strip(),
